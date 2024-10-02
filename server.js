@@ -8,7 +8,7 @@ const PORT = process.env.PORT || 10000;
 
 // Middleware
 app.use(cors({
-  origin: 'http://localhost:3000',  // Your frontend domain
+  origin: 'https://callcentersy.netlify.app',  // Your frontend domain
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type']
 }));
