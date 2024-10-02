@@ -4,7 +4,7 @@ const bodyParser = require('body-parser');
 const db = require('./firebase'); // Adjust this path as necessary
 
 const app = express();
-const PORT = process.env.PORT || 5001;
+const PORT = process.env.PORT || 10000;
 
 // Middleware
 app.use(cors({
