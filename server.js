@@ -9,9 +9,14 @@ const PORT = process.env.PORT || 10000;
 // Middleware
 app.use(cors({
   origin: 'https://callcentersy.netlify.app',  // Your frontend domain
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type']
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],  // Allow all needed methods
+  allowedHeaders: ['Content-Type', 'Authorization'],  // Add Authorization if needed
+  credentials: true  // Allow credentials if needed (cookies, tokens)
 }));
+
+// Handle preflight requests (OPTIONS method)
+app.options('*', cors());  // This ensures that OPTIONS requests are allowed
+
 app.use(bodyParser.json()); // To parse JSON bodies
 
 // Endpoint: Fetch estate with owner details
