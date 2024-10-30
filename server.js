@@ -6,18 +6,30 @@ const db = require('./firebase'); // Adjust this path as necessary
 const app = express();
 const PORT = process.env.PORT || 10000;
 
-// Middleware
-app.use(cors({
-  origin: 'https://callcentersy.netlify.app',  // Your frontend domain
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],  // Allow all needed methods
-  allowedHeaders: ['Content-Type', 'Authorization'],  // Add Authorization if needed
-  credentials: true  // Allow credentials if needed (cookies, tokens)
-}));
 
-// Handle preflight requests (OPTIONS method)
-app.options('*', cors());  // This ensures that OPTIONS requests are allowed
+const allowedOrigins = ['https://callcentersy.netlify.app', 'http://localhost:3000'];
 
-app.use(bodyParser.json()); // To parse JSON bodies
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+  }
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.header('Access-Control-Allow-Credentials', 'true');  // Required for cookies and auth headers
+  if (req.method === 'OPTIONS') {
+    res.sendStatus(204);  // Respond to preflight requests immediately
+  } else {
+    next();
+  }
+});
+
+app.use(bodyParser.json()); 
+
+
+
+
+
 
 // Endpoint: Fetch estate with owner details
 app.get('/estate-with-owner/:estateId', async (req, res) => {
