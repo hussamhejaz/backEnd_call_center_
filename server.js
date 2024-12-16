@@ -14,7 +14,7 @@ app.use((req, res, next) => {
   if (allowedOrigins.includes(origin)) {
     res.setHeader('Access-Control-Allow-Origin', origin);
   }
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH,  OPTIONS');
   res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   res.header('Access-Control-Allow-Credentials', 'true');  // Required for cookies and auth headers
   if (req.method === 'OPTIONS') {
@@ -616,9 +616,70 @@ app.put('/update-isaccepted/:category/:estateId', async (req, res) => {
 
 
 
+app.get('/posts', async (req, res) => {
+  try {
+    const postsRef = db.ref('App/AllPosts');
+    const snapshot = await postsRef.once('value');
+
+    if (!snapshot.exists()) {
+      return res.status(404).json({ error: 'No posts found.' });
+    }
+
+    const posts = snapshot.val();
+    return res.status(200).json(posts);
+  } catch (error) {
+    console.error('Error fetching posts:', error);
+    return res.status(500).json({ error: 'Internal server error.' });
+  }
+});
+
+app.patch('/posts/:postId/status', async (req, res) => {
+  const { postId } = req.params;
+  const { status } = req.body;
+
+  // Validate status
+  if (![1, 2].includes(status)) {
+    return res.status(400).json({ error: 'Invalid status value. Must be 1 (accepted) or 2 (rejected).' });
+  }
+
+  try {
+    const postRef = db.ref(`App/AllPosts/${postId}`);
+
+    // Check if post exists
+    const snapshot = await postRef.once('value');
+    if (!snapshot.exists()) {
+      return res.status(404).json({ error: 'Post not found.' });
+    }
+
+    // Update the status
+    await postRef.update({ Status: status });
+
+    return res.status(200).json({ message: 'Post status updated successfully.' });
+  } catch (error) {
+    console.error('Error updating post status:', error);
+    return res.status(500).json({ error: 'Internal server error.' });
+  }
+});
 
 
 
+app.get('/posts/:postId', async (req, res) => {
+  const { postId } = req.params;
+
+  try {
+    const postRef = db.ref(`App/AllPosts/${postId}`);
+    const snapshot = await postRef.once('value');
+
+    if (!snapshot.exists()) {
+      return res.status(404).json({ error: 'Post not found.' });
+    }
+
+    return res.status(200).json(snapshot.val());
+  } catch (error) {
+    console.error('Error fetching post:', error);
+    return res.status(500).json({ error: 'Internal server error.' });
+  }
+});
 
 
 
