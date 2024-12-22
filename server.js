@@ -638,7 +638,7 @@ app.patch('/posts/:postId/status', async (req, res) => {
   const { status } = req.body;
 
   // Validate status
-  if (![1, 2].includes(status)) {
+  if (!['1', '2'].includes(status)) {
     return res.status(400).json({ error: 'Invalid status value. Must be 1 (accepted) or 2 (rejected).' });
   }
 
