@@ -537,7 +537,7 @@ app.get('/new-estate', async (req, res) => {
           country: estate.Country || 'Unknown Country',
           state: estate.State || 'Unknown State',
           facilityPdfUrl: estate.FacilityPdfUrl|| 'No facilityPdfUrl',
-          taxPdfUrl: estate.TaxPdfUrl || 'No TaxPdfUrl ',
+          taxPdfUrl: estate.TaxPdfUrl || 'No TaxPdfUrl',
           price: estate.Price || 'Unknown',
           priceLast: estate.PriceLast || 'Unknown',
           hasKidsArea: estate.HasKidsArea === "1" ? "Yes" : "No",
