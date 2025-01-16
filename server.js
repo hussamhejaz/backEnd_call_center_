@@ -540,7 +540,6 @@ app.get('/new-estate', async (req, res) => {
           taxPdfUrl: estate.TaxPdfUrl || 'No fTaxPdfUrl ',
           price: estate.Price || 'Unknown',
           priceLast: estate.PriceLast || 'Unknown',
-          taxNumber: estate.TaxNumer || 'Unknown',
           hasKidsArea: estate.HasKidsArea === "1" ? "Yes" : "No",
           hasMassage: estate.HasMassage === "1" ? "Yes" : "No",
           hasSwimmingPool: estate.HasSwimmingPool === "1" ? "Yes" : "No",
