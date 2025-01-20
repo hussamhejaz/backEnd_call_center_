@@ -148,46 +148,48 @@ app.get('/user-with-bookings/:userId', async (req, res) => {
   const { userId } = req.params;
 
   try {
+    // Fetch user data
     const userSnapshot = await db.ref(`App/User/${userId}`).once('value');
     if (!userSnapshot.exists()) {
       return res.status(404).json({ message: 'User not found' });
     }
     const userData = userSnapshot.val();
 
+    // Fetch bookings
     const bookingSnapshot = await db.ref('App/Booking/Book').once('value');
-    if (!bookingSnapshot.exists()) {
-      return res.status(404).json({ message: 'No bookings found for this user' });
+    const bookings = [];
+    if (bookingSnapshot.exists()) {
+      bookingSnapshot.forEach((childSnapshot) => {
+        const booking = childSnapshot.val();
+        if (booking.IDUser === userId) {
+          bookings.push({
+            id: childSnapshot.key,
+            placeName: booking.NameEn,
+            city: booking.City || 'Unknown',
+            country: booking.Country || 'Unknown',
+            startDate: booking.StartDate || 'N/A',
+            endDate: booking.EndDate || 'N/A',
+            dateOfBooking: booking.DateOfBooking || 'N/A',
+            netTotal: booking.NetTotal || '0.0',
+            status: booking.Status,
+          });
+        }
+      });
     }
 
-    const bookings = [];
-    bookingSnapshot.forEach((childSnapshot) => {
-      const booking = childSnapshot.val();
-      if (booking.IDUser === userId) {
-        bookings.push({
-          id: childSnapshot.key,
-          placeName: booking.NameEn,
-          city: booking.City || 'Unknown',
-          country: booking.Country || 'Unknown',
-          startDate: booking.StartDate || 'N/A',
-          endDate: booking.EndDate || 'N/A',
-          dateOfBooking: booking.DateOfBooking || 'N/A',
-          netTotal: booking.NetTotal || '0.0',
-          status: booking.Status
-        });
-      }
-    });
-
+    // Send response with user and bookings
     const response = {
       user: userData,
-      bookings: bookings,
+      bookings: bookings, // Can be an empty array
     };
 
-    res.json(response);
+    res.status(200).json(response);
   } catch (error) {
     console.error('Error fetching user and booking data:', error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+
 
 // Endpoint: Fetch customers (TypeUser = 1)
 app.get('/user', async (req, res) => {
