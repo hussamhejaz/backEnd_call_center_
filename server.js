@@ -685,6 +685,56 @@ app.get('/posts/:postId', async (req, res) => {
 
 
 
+app.put('/update-user-type/:userId', async (req, res) => {
+  const { userId } = req.params;
+  const { TypeAccount } = req.body;
+
+  // Check if the new TypeAccount value is provided
+  if (TypeAccount === undefined) {
+    return res.status(400).json({ message: 'TypeAccount value is required.' });
+  }
+
+  try {
+    // Reference the specific user in Firebase
+    const userRef = db.ref(`App/User/${userId}`);
+    const userSnapshot = await userRef.once('value');
+
+    if (!userSnapshot.exists()) {
+      return res.status(404).json({ message: 'User not found.' });
+    }
+
+    // Update the TypeAccount property
+    await userRef.update({ TypeAccount: TypeAccount });
+    res.json({ message: 'User TypeAccount updated successfully.' });
+  } catch (error) {
+    console.error('Error updating user type account:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+app.get('/provider', async (req, res) => {
+  try {
+    const snapshot = await db.ref('App/User').once('value');
+    if (!snapshot.exists()) {
+      return res.status(404).json({ message: 'No data available' });
+    }
+    const users = snapshot.val();
+
+    const filteredUsers = Object.keys(users)
+      .filter(key => users[key].TypeUser === '2')
+      .map(key => ({
+        id: key,
+        ...users[key],
+        accountType: Number.parseInt(users[key].TypeAccount, 10)
+      }));
+
+    res.json(filteredUsers);
+  } catch (error) {
+    console.error('Error fetching customers:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
 
 // Start the server
 app.listen(PORT, () => {
