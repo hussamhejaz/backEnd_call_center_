@@ -530,6 +530,7 @@ app.get('/new-estate', async (req, res) => {
           companyName: estate.NameEn || 'Unknown Company',
           email: user?.Email || 'No Email',
           phone: user?.PhoneNumber || 'No Phone',
+          agentCode: user?.AgentCode || 'no AgentCode',
           logo: user?.ProfileImageUrl || 'https://via.placeholder.com/100',
           type: estate.Type || 'Unknown Type',
           industry: estate.BioEn || estate.BioAr || 'Unknown Industry',
